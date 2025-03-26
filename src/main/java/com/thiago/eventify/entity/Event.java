@@ -67,7 +67,7 @@ public class Event {
 
     @ManyToMany
     @JoinTable(
-            name = "event_participants",
+            name = "tb_event_participants",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )

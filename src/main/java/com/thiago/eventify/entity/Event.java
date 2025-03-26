@@ -1,10 +1,7 @@
 package com.thiago.eventify.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +21,7 @@ public class Event {
     private UUID id;
 
     @Column(name = "owner_id", nullable = false)
-    @NotBlank(message = "O ID do dono do evento deve ser informado.")
+    @NotNull(message = "O ID do dono do evento deve ser informado.")
     private UUID ownerId;
 
     @Column(name = "title", nullable = false, length = 100)
@@ -38,6 +35,7 @@ public class Event {
 
     @Column(name = "date_time", nullable = false)
     @Future(message = "A data do evento tem que ser uma data futura.")
+    @NotNull(message = "A data do evento não pode ser nula.")
     private LocalDateTime dateTime;
 
     @Column(name = "cep", nullable = false)

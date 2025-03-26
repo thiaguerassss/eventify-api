@@ -41,6 +41,7 @@ public class Event {
     private LocalDateTime dateTime;
 
     @Column(name = "cep", nullable = false)
+    @NotBlank(message = "O CEP não pode ser vazio.")
     @Pattern(
             regexp = "^\\d{5}-?\\d{3}$",
             message = "CEP inválido. Use o formato 12345-678 ou 12345678."

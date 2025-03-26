@@ -5,17 +5,17 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_events")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class Event {
 
@@ -65,4 +65,27 @@ public class Event {
     @Column(name = "country", nullable = false)
     @NotBlank(message = "O país do evento não pode ser vazio.")
     private String country;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_participants",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
+    private Set<User> participants = new HashSet<>();
+
+    public Event(UUID id, UUID ownerId, String title, String description, LocalDateTime dateTime, String cep,
+                 String address, String addressNumber, String city, String state, String country) {
+        this.id = id;
+        this.ownerId = ownerId;
+        this.title = title;
+        this.description = description;
+        this.dateTime = dateTime;
+        this.cep = cep;
+        this.address = address;
+        this.addressNumber = addressNumber;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+    }
 }

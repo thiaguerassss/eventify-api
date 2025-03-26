@@ -5,17 +5,17 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.br.CPF;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_users")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class User {
 
@@ -42,4 +42,15 @@ public class User {
             message = "O PIN deve conter exatamente 4 dígitos numéricos."
     )
     private String pin;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Event> participatingEvents = new HashSet<>();
+
+    public User(UUID id, String name, String cpf, String email, String pin) {
+        this.id = id;
+        this.name = name;
+        this.cpf = cpf;
+        this.email = email;
+        this.pin = pin;
+    }
 }

@@ -29,14 +29,17 @@ public class User {
     private String name;
 
     @Column(name = "cpf", unique = true, nullable = false)
+    @NotBlank(message = "CPF não pode estar em branco.")
     @CPF(message = "CPF inválido.")
     private String cpf;
 
     @Column(name = "email", nullable = false)
+    @NotBlank(message = "E-mail não pode estar em branco.")
     @Email(message = "E-mail inválido.")
     private String email;
 
     @Column(name = "pin", nullable = false, length = 4)
+    @NotBlank(message = "O PIN não pode estar em branco.")
     @Pattern(
             regexp = "^[0-9]{4}$",
             message = "O PIN deve conter exatamente 4 dígitos numéricos."

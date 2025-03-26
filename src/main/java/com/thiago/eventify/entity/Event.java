@@ -41,8 +41,8 @@ public class Event {
     @Column(name = "cep", nullable = false)
     @NotBlank(message = "O CEP não pode ser vazio.")
     @Pattern(
-            regexp = "^\\d{5}-?\\d{3}$",
-            message = "CEP inválido. Use o formato 12345-678 ou 12345678."
+            regexp = "^[0-9]{5}-[0-9]{3}$",
+            message = "CEP inválido. Use o formato 12345-678."
     )
     private String cep;
 

@@ -61,10 +61,6 @@ public class Event {
     @NotBlank(message = "O estado do evento não pode ser vazio.")
     private String state;
 
-    @Column(name = "country", nullable = false)
-    @NotBlank(message = "O país do evento não pode ser vazio.")
-    private String country;
-
     @ManyToMany
     @JoinTable(
             name = "tb_event_participants",
@@ -74,7 +70,7 @@ public class Event {
     private Set<User> participants = new HashSet<>();
 
     public Event(UUID id, UUID ownerId, String title, String description, LocalDateTime dateTime, String cep,
-                 String address, String addressNumber, String city, String state, String country) {
+                 String address, String addressNumber, String city, String state) {
         this.id = id;
         this.ownerId = ownerId;
         this.title = title;
@@ -85,6 +81,5 @@ public class Event {
         this.addressNumber = addressNumber;
         this.city = city;
         this.state = state;
-        this.country = country;
     }
 }

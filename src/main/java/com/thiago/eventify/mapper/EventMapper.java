@@ -20,7 +20,6 @@ public class EventMapper {
 
     public static EventInListDTO toDTO(Event event){
         return new EventInListDTO(event.getId(), event.getTitle(), event.getDescription(), event.getDateTime(),
-                event.getCep(), event.getAddress(), event.getAddressNumber(), event.getCity(), event.getState(),
-                event.getCountry());
+                event.getCep(), event.getAddress(), event.getAddressNumber(), event.getCity(), event.getState());
     }
 }

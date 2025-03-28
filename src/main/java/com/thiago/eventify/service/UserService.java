@@ -3,7 +3,7 @@ package com.thiago.eventify.service;
 import com.thiago.eventify.dto.CreateUserDTO;
 import com.thiago.eventify.dto.UpdateUserDTO;
 import com.thiago.eventify.entity.User;
-import com.thiago.eventify.exception.InvalidPinException;
+import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ public class UserService {
     public User findByIdAndValidate(UUID id, String pin){
         User user = this.userRepository.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Usuário não encontrado.", id));;
-        if (!pin.equals(user.getPin())) throw new InvalidPinException("O PIN informado é inválido.");
+        if (!pin.equals(user.getPin())) throw new InvalidInputException("O PIN informado é inválido.");
         return user;
     }
 

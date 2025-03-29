@@ -22,7 +22,7 @@ public class UserService {
 
     public User findByIdAndValidate(UUID id, String pin){
         User user = this.userRepository.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException("Usuário não encontrado.", id));;
+                new ObjectNotFoundException("Usuário não encontrado.", id));
         if (!pin.equals(user.getPin())) throw new InvalidInputException("O PIN informado é inválido.");
         return user;
     }
@@ -40,6 +40,7 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
+    @Transactional
     public void delete(UUID id, String pin){
         User user = this.findByIdAndValidate(id, pin);
         this.userRepository.deleteById(user.getId());

@@ -51,8 +51,10 @@ public class EventService {
     public Event update(UUID id, UUID ownerId, String ownerPin, @Valid UpdateEventDTO data){
         Event event = this.findEventAndValidateOwner(id, ownerId, ownerPin);
         EventMapper.updateEntity(data, event);
-        CepResponseDTO addressData = this.getAddressInfo(event);
-        this.setAddressInfo(addressData, event);
+        if (event.getCep().equals(data.cep())){
+            CepResponseDTO addressData = this.getAddressInfo(event);
+            this.setAddressInfo(addressData, event);
+        }
         return this.eventRepository.save(event);
     }
 

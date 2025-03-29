@@ -8,6 +8,7 @@ import com.thiago.eventify.entity.User;
 import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.repository.EventRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class EventService {
     }
 
     @Transactional
-    public Event create(CreateEventDTO data, String pin){
+    public Event create(@Valid CreateEventDTO data, String pin){
         this.userService.findByIdAndValidate(data.ownerId(), pin);
         Event event = EventMapper.toEntity(data);
         String eventCep = event.getCep().replace("-", "");

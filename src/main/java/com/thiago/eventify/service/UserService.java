@@ -8,7 +8,6 @@ import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,11 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
 
     public User findByIdAndValidate(UUID id, String pin){
         User user = this.userRepository.findById(id).orElseThrow(() ->

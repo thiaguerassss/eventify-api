@@ -11,7 +11,6 @@ import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.repository.EventRepository;
 import jakarta.validation.Valid;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +20,15 @@ import java.util.UUID;
 @Service
 public class EventService {
 
-    @Autowired
-    private EventRepository eventRepository;
+    private final EventRepository eventRepository;
+    private final UserService userService;
+    private final CepClient cepClient;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CepClient cepClient;
+    public EventService(EventRepository eventRepository, UserService userService, CepClient cepClient){
+        this.eventRepository = eventRepository;
+        this.userService = userService;
+        this.cepClient = cepClient;
+    }
 
     public Event findById(UUID id){
         return this.eventRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Evento não encontrado.", id));

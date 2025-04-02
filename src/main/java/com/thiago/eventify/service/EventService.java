@@ -1,6 +1,6 @@
 package com.thiago.eventify.service;
 
-import com.thiago.eventify.client.dto.AddressDTO;
+import com.thiago.eventify.client.dto.AddressInfoDTO;
 import com.thiago.eventify.client.service.AwesomeApiClient;
 import com.thiago.eventify.dto.CreateEventDTO;
 import com.thiago.eventify.dto.UpdateEventDTO;
@@ -42,7 +42,7 @@ public class EventService {
     public Event create(@Valid CreateEventDTO data, String pin){
         this.userService.findByIdAndValidate(data.ownerId(), pin);
         Event event = EventMapper.toEntity(data);
-        AddressDTO addressData = this.getAddressInfo(event);
+        AddressInfoDTO addressData = this.getAddressInfo(event);
         this.setAddressInfo(addressData, event);
         return this.eventRepository.save(event);
     }
@@ -52,7 +52,7 @@ public class EventService {
         Event event = this.findEventAndValidateOwner(id, ownerId, ownerPin);
         EventMapper.updateEntity(data, event);
         if (event.getCep().equals(data.cep())){
-            AddressDTO addressData = this.getAddressInfo(event);
+            AddressInfoDTO addressData = this.getAddressInfo(event);
             this.setAddressInfo(addressData, event);
         }
         return this.eventRepository.save(event);
@@ -71,14 +71,14 @@ public class EventService {
         return event;
     }
 
-    private AddressDTO getAddressInfo(Event event){
+    private AddressInfoDTO getAddressInfo(Event event){
         String eventCep = event.getCep().replace("-", "");
-        AddressDTO addressData = this.awesomeApiClient.addressInfo(eventCep);
+        AddressInfoDTO addressData = this.awesomeApiClient.addressInfo(eventCep);
         if (addressData.status().equals(404)) throw new InvalidInputException("O CEP informado não existe na base de dados.");
         return addressData;
     }
 
-    private void setAddressInfo(AddressDTO addressData, Event event){
+    private void setAddressInfo(AddressInfoDTO addressData, Event event){
         event.setAddress(addressData.address());
         event.setCity(addressData.city());
         event.setState(addressData.state());

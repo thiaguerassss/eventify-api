@@ -1,7 +1,7 @@
 package com.thiago.eventify.service;
 
-import com.thiago.eventify.client.dto.CepResponseDTO;
-import com.thiago.eventify.client.service.CepClient;
+import com.thiago.eventify.client.dto.AddressDTO;
+import com.thiago.eventify.client.service.AwesomeApiClient;
 import com.thiago.eventify.dto.CreateEventDTO;
 import com.thiago.eventify.dto.UpdateEventDTO;
 import com.thiago.eventify.entity.Event;
@@ -22,12 +22,12 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserService userService;
-    private final CepClient cepClient;
+    private final AwesomeApiClient awesomeApiClient;
 
-    public EventService(EventRepository eventRepository, UserService userService, CepClient cepClient){
+    public EventService(EventRepository eventRepository, UserService userService, AwesomeApiClient awesomeApiClient){
         this.eventRepository = eventRepository;
         this.userService = userService;
-        this.cepClient = cepClient;
+        this.awesomeApiClient = awesomeApiClient;
     }
 
     public Event findById(UUID id){
@@ -42,7 +42,7 @@ public class EventService {
     public Event create(@Valid CreateEventDTO data, String pin){
         this.userService.findByIdAndValidate(data.ownerId(), pin);
         Event event = EventMapper.toEntity(data);
-        CepResponseDTO addressData = this.getAddressInfo(event);
+        AddressDTO addressData = this.getAddressInfo(event);
         this.setAddressInfo(addressData, event);
         return this.eventRepository.save(event);
     }
@@ -52,7 +52,7 @@ public class EventService {
         Event event = this.findEventAndValidateOwner(id, ownerId, ownerPin);
         EventMapper.updateEntity(data, event);
         if (event.getCep().equals(data.cep())){
-            CepResponseDTO addressData = this.getAddressInfo(event);
+            AddressDTO addressData = this.getAddressInfo(event);
             this.setAddressInfo(addressData, event);
         }
         return this.eventRepository.save(event);
@@ -71,16 +71,17 @@ public class EventService {
         return event;
     }
 
-    private CepResponseDTO getAddressInfo(Event event){
+    private AddressDTO getAddressInfo(Event event){
         String eventCep = event.getCep().replace("-", "");
-        CepResponseDTO addressData = this.cepClient.addressInfo(eventCep);
-        if (addressData.erro()) throw new InvalidInputException("O CEP informado não existe na base de dados.");
+        AddressDTO addressData = this.awesomeApiClient.addressInfo(eventCep);
+        if (addressData.status().equals(404)) throw new InvalidInputException("O CEP informado não existe na base de dados.");
         return addressData;
     }
 
-    private void setAddressInfo(CepResponseDTO addressData, Event event){
-        event.setAddress(addressData.logradouro());
-        event.setCity(addressData.localidade());
-        event.setState(addressData.uf());
+    private void setAddressInfo(AddressDTO addressData, Event event){
+        event.setAddress(addressData.address());
+        event.setCity(addressData.city());
+        event.setState(addressData.state());
+        event.setDistrict(addressData.district());
     }
 }

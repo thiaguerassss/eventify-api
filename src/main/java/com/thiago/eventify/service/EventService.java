@@ -7,7 +7,10 @@ import com.thiago.eventify.client.service.WeatherForecastApiClient;
 import com.thiago.eventify.dto.CreateEventDTO;
 import com.thiago.eventify.dto.UpdateEventDTO;
 import com.thiago.eventify.entity.Event;
+import com.thiago.eventify.entity.User;
 import com.thiago.eventify.exception.AccessDeniedException;
+import com.thiago.eventify.exception.ForbiddenRegisterException;
+import com.thiago.eventify.exception.ImpossibleUnregisterException;
 import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.repository.EventRepository;
@@ -16,6 +19,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -78,12 +82,53 @@ public class EventService {
         return this.weatherForecastApiClient.weatherInfo(latitude, longitude);
     }
 
+    @Transactional
+    public void registerParticipant(UUID eventId, UUID userId, String userPin){
+        Event event = this.findById(eventId);
+        User user = this.userService.findByIdAndValidate(userId, userPin);
+        this.validateEventRegistration(event);
+        event.getParticipants().add(user);
+        user.getParticipatingEvents().add(event);
+        this.eventRepository.save(event);
+    }
+
+    @Transactional
+    public void unregisterParticipant(UUID eventId, UUID userId, String userPin){
+        Event event = this.findById(eventId);
+        User user = this.userService.findByIdAndValidate(userId, userPin);
+        this.validateEventUnregistration(event);
+        event.getParticipants().remove(user);
+        user.getParticipatingEvents().remove(event);
+        this.eventRepository.save(event);
+    }
+
     private Event findEventAndValidateOwner(UUID id, UUID ownerId, String ownerPin){
         Event event = this.findById(id);
         this.userService.findByIdAndValidate(ownerId, ownerPin);
         if (!event.getOwnerId().equals(ownerId)) throw new AccessDeniedException(
                 "Acesso negado: o usuário informado não é o dono do evento.");
         return event;
+    }
+
+    private void validateEventRegistration(Event event) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(event.getDateTime())) {
+            throw new ForbiddenRegisterException("Inscrição para o evento proibida: o evento já aconteceu.");
+        }
+        if (now.isAfter(event.getDateTime().minusMinutes(30))) {
+            throw new ForbiddenRegisterException("Inscrição para o evento proibida: as inscrições estão fechadas.");
+        }
+    }
+
+    private void validateEventUnregistration(Event event){
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(event.getDateTime())){
+            throw new ImpossibleUnregisterException("Não é possível cancelar a inscrição: o evento já passou.");
+        }
+        if (now.isAfter(event.getDateTime().minusMinutes(15))){
+            throw new ImpossibleUnregisterException("Não é possível cancelar a inscrição faltando 15 minutos para " +
+                    "o início do evento.");
+        }
     }
 
     private AwesomeApiResponseDTO getAddressInfo(Event event){

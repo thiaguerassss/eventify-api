@@ -1,10 +1,14 @@
 package com.thiago.eventify.mapper;
 
+import com.thiago.eventify.client.dto.WeatherForecastApiResponseDTO;
 import com.thiago.eventify.dto.CreateEventDTO;
-import com.thiago.eventify.dto.EventInListDTO;
+import com.thiago.eventify.dto.EventDTO;
+import com.thiago.eventify.dto.EventWithWeatherForecastDTO;
 import com.thiago.eventify.dto.UpdateEventDTO;
 import com.thiago.eventify.entity.Event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class EventMapper {
@@ -29,9 +33,17 @@ public class EventMapper {
         if (Objects.nonNull(data.addressNumber())) event.setAddressNumber(data.addressNumber());
     }
 
-    public static EventInListDTO toDTO(Event event){
-        return new EventInListDTO(event.getId(), event.getTitle(), event.getDescription(), event.getDateTime(),
-                event.getCep(), event.getAddress(), event.getAddressNumber(), event.getCity(), event.getState(),
-                event.getDistrict());
+    public static EventWithWeatherForecastDTO toDTO(Event event, WeatherForecastApiResponseDTO weatherData){
+        return new EventWithWeatherForecastDTO(toDTO(event), weatherData.daily());
+    }
+
+    public static List<EventDTO> toDTOList(List<Event> events){
+        return events.stream().map(EventMapper::toDTO).toList();
+    }
+
+    private static EventDTO toDTO(Event event){
+        return new EventDTO(event.getId(), event.getTitle(), event.getDescription(),
+                event.getDateTime(), event.getCep(), event.getAddress(), event.getAddressNumber(), event.getCity(),
+                event.getState(), event.getDistrict());
     }
 }

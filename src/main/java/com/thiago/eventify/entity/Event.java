@@ -21,29 +21,18 @@ public class Event {
     private UUID id;
 
     @Column(name = "owner_id", nullable = false)
-    @NotNull(message = "O ID do dono do evento deve ser informado.")
     private UUID ownerId;
 
     @Column(name = "title", nullable = false, length = 100)
-    @NotBlank(message = "O título do evento não pode ser vazio.")
-    @Size(max = 100, message = "O título deve conter no máximo 100 caracteres.")
     private String title;
 
     @Column(name = "description", nullable = false)
-    @NotBlank(message = "A descrição do evento não pode ser vazia.")
     private String description;
 
     @Column(name = "date_time", nullable = false)
-    @Future(message = "A data do evento tem que ser uma data futura.")
-    @NotNull(message = "A data do evento não pode ser nula.")
     private LocalDateTime dateTime;
 
     @Column(name = "cep", nullable = false)
-    @NotBlank(message = "O CEP não pode ser vazio.")
-    @Pattern(
-            regexp = "^[0-9]{5}-[0-9]{3}$",
-            message = "CEP inválido. Use o formato 12345-678."
-    )
     private String cep;
 
     @Column(name = "address", nullable = false)

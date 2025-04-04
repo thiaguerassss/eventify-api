@@ -86,7 +86,7 @@ public class EventService {
     public void registerParticipant(UUID eventId, UUID userId, String userPin){
         Event event = this.findById(eventId);
         User user = this.userService.findByIdAndValidate(userId, userPin);
-        this.validateEventRegistration(event);
+        this.validateEventRegistration(event, user);
         event.getParticipants().add(user);
         user.getParticipatingEvents().add(event);
         this.eventRepository.save(event);
@@ -96,7 +96,7 @@ public class EventService {
     public void unregisterParticipant(UUID eventId, UUID userId, String userPin){
         Event event = this.findById(eventId);
         User user = this.userService.findByIdAndValidate(userId, userPin);
-        this.validateEventUnregistration(event);
+        this.validateEventUnregistration(event, user);
         event.getParticipants().remove(user);
         user.getParticipatingEvents().remove(event);
         this.eventRepository.save(event);
@@ -110,7 +110,10 @@ public class EventService {
         return event;
     }
 
-    private void validateEventRegistration(Event event) {
+    private void validateEventRegistration(Event event, User user) {
+        if (event.getParticipants().contains(user)){
+            throw new ForbiddenRegisterException("Usuário já inscrito no evento.");
+        }
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(event.getDateTime())) {
             throw new ForbiddenRegisterException("Inscrição para o evento proibida: o evento já aconteceu.");
@@ -120,7 +123,10 @@ public class EventService {
         }
     }
 
-    private void validateEventUnregistration(Event event){
+    private void validateEventUnregistration(Event event, User user){
+        if (!event.getParticipants().contains(user)){
+            throw new ImpossibleUnregisterException("Usuário não está inscrito neste evento.");
+        }
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(event.getDateTime())){
             throw new ImpossibleUnregisterException("Não é possível cancelar a inscrição: o evento já passou.");

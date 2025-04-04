@@ -14,7 +14,6 @@ import com.thiago.eventify.exception.ImpossibleUnregisterException;
 import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.repository.EventRepository;
-import jakarta.validation.Valid;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +49,7 @@ public class EventService {
     }
 
     @Transactional
-    public Event create(@Valid CreateEventDTO data, String pin){
+    public Event create(CreateEventDTO data, String pin){
         this.userService.findByIdAndValidate(data.ownerId(), pin);
         Event event = EventMapper.toEntity(data);
         AwesomeApiResponseDTO addressData = this.getAddressInfo(event);
@@ -59,7 +58,7 @@ public class EventService {
     }
 
     @Transactional
-    public Event update(UUID id, UUID ownerId, String ownerPin, @Valid UpdateEventDTO data){
+    public Event update(UUID id, UUID ownerId, String ownerPin, UpdateEventDTO data){
         Event event = this.findEventAndValidateOwner(id, ownerId, ownerPin);
         EventMapper.updateEntity(data, event);
         if (event.getCep().equals(data.cep())){

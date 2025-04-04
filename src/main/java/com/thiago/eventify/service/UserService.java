@@ -6,7 +6,6 @@ import com.thiago.eventify.entity.User;
 import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +29,13 @@ public class UserService {
     }
 
     @Transactional
-    public User create(@Valid CreateUserDTO data){
+    public User create(CreateUserDTO data){
         User user = UserMapper.toEntity(data);
         return this.userRepository.save(user);
     }
 
     @Transactional
-    public User update(UUID id, String pin, @Valid UpdateUserDTO data){
+    public User update(UUID id, String pin, UpdateUserDTO data){
         User user = this.findByIdAndValidate(id, pin);
         UserMapper.updateEntity(data, user);
         return this.userRepository.save(user);

@@ -4,7 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .env
-src/main/java/com/thiago/eventify/controller/Teste.java
 
 ### STS ###
 .apt_generated

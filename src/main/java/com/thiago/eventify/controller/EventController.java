@@ -1,19 +1,20 @@
 package com.thiago.eventify.controller;
 
 import com.thiago.eventify.client.dto.WeatherForecastApiResponseDTO;
-import com.thiago.eventify.dto.CreateEventDTO;
-import com.thiago.eventify.dto.EventDTO;
-import com.thiago.eventify.dto.EventWithWeatherForecastDTO;
-import com.thiago.eventify.dto.UpdateEventDTO;
+import com.thiago.eventify.dto.*;
 import com.thiago.eventify.entity.Event;
+import com.thiago.eventify.entity.User;
 import com.thiago.eventify.mapper.EventMapper;
+import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.service.EventService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -81,5 +82,12 @@ public class EventController {
                                                     @RequestParam("userPin") String userPin){
         this.eventService.unregisterParticipant(id, userId, userPin);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<UserDTO>> findParticipantsByEvent(@PathVariable("id") UUID id){
+        Set<User> participants = this.eventService.findAllParticipants(id);
+        List<UserDTO> participantsDTO = UserMapper.toDTOList(participants.stream().toList());
+        return ResponseEntity.ok(participantsDTO);
     }
 }

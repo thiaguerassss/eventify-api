@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -101,6 +102,11 @@ public class EventService {
         event.getParticipants().remove(user);
         user.getParticipatingEvents().remove(event);
         this.eventRepository.save(event);
+    }
+
+    public Set<User> findAllParticipants(UUID id){
+        Event event = this.findById(id);
+        return event.getParticipants();
     }
 
     private Event findEventAndValidateOwner(UUID id, UUID ownerId, String ownerPin){

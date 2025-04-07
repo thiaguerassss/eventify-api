@@ -5,6 +5,7 @@ import com.thiago.eventify.dto.UpdateUserDTO;
 import com.thiago.eventify.dto.UserDTO;
 import com.thiago.eventify.entity.User;
 
+import java.util.List;
 import java.util.Objects;
 
 public class UserMapper {
@@ -27,5 +28,9 @@ public class UserMapper {
 
     public static UserDTO toDTO(User user){
         return new UserDTO(user.getId(), user.getName(), user.getCpf(), user.getEmail(), user.getPin());
+    }
+
+    public static List<UserDTO> toDTOList(List<User> users){
+        return users.stream().map(UserMapper::toDTO).toList();
     }
 }

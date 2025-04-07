@@ -111,21 +111,22 @@ public class EventService {
         return event;
     }
 
-    private void validateEventUpdate(Event event, UpdateEventDTO data){
+    private void validateEventUpdate(Event event, UpdateEventDTO data) {
         LocalDate today = LocalDate.now();
         LocalDate eventDay = event.getDateTime().toLocalDate();
+
+        if (!today.isEqual(eventDay)) return;
+
         LocalDate newEventDay = data.dateTime().toLocalDate();
-        if (today.isEqual(eventDay)){
-            if (!newEventDay.isEqual(eventDay)){
-                throw new ForbiddenEventUpdateException(
-                        "Não é permitido alterar a data no dia do evento, somente o horário.");
-            }
-            LocalTime now = LocalTime.now();
-            LocalTime eventTime = event.getDateTime().toLocalTime();
-            if(HOURS.between(now, eventTime) < 4){
-                throw new ForbiddenEventUpdateException(
-                        "Não é permitido alterar o horário do evento sem no mínimo 4 horas de antecedência.");
-            }
+        if (!newEventDay.isEqual(eventDay)) {
+            throw new ForbiddenEventUpdateException(
+                    "Não é permitido alterar a data no dia do evento, somente o horário.");
+        }
+
+        long hoursUntilEvent = HOURS.between(LocalTime.now(), event.getDateTime().toLocalTime());
+        if (hoursUntilEvent < 4) {
+            throw new ForbiddenEventUpdateException(
+                    "Não é permitido alterar o horário do evento com menos de 4 horas de antecedência.");
         }
     }
 

@@ -1,9 +1,12 @@
 package com.thiago.eventify.controller;
 
 import com.thiago.eventify.dto.CreateUserDTO;
+import com.thiago.eventify.dto.EventDTO;
 import com.thiago.eventify.dto.UpdateUserDTO;
 import com.thiago.eventify.dto.UserDTO;
+import com.thiago.eventify.entity.Event;
 import com.thiago.eventify.entity.User;
+import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.service.UserService;
 import jakarta.validation.Valid;
@@ -11,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -50,5 +55,12 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         this.userService.delete(id, pin);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/events")
+    public ResponseEntity<List<EventDTO>> findAllEventsByUser(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
+        Set<Event> events = this.userService.findAllEvents(id, pin);
+        List<EventDTO> eventsDTO = EventMapper.toDTOList(events.stream().toList());
+        return ResponseEntity.ok(eventsDTO);
     }
 }

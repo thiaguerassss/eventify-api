@@ -2,6 +2,7 @@ package com.thiago.eventify.service;
 
 import com.thiago.eventify.dto.CreateUserDTO;
 import com.thiago.eventify.dto.UpdateUserDTO;
+import com.thiago.eventify.entity.Event;
 import com.thiago.eventify.entity.User;
 import com.thiago.eventify.exception.InvalidInputException;
 import com.thiago.eventify.mapper.UserMapper;
@@ -10,6 +11,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -45,5 +47,10 @@ public class UserService {
     public void delete(UUID id, String pin){
         User user = this.findByIdAndValidate(id, pin);
         this.userRepository.deleteById(user.getId());
+    }
+
+    public Set<Event> findAllEvents (UUID id, String pin){
+        User user = this.findByIdAndValidate(id, pin);
+        return user.getParticipatingEvents();
     }
 }

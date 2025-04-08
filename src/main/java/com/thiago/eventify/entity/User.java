@@ -2,7 +2,9 @@ package com.thiago.eventify.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +33,8 @@ public class User {
     private String pin;
 
     @ManyToMany(mappedBy = "participants")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Event> participatingEvents = new HashSet<>();
 
     public User(UUID id, String name, String cpf, String email, String pin) {

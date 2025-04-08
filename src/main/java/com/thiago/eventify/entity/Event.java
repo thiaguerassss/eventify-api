@@ -3,7 +3,9 @@ package com.thiago.eventify.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -60,6 +62,8 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<User> participants = new HashSet<>();
 
     public Event(UUID id, UUID ownerId, String title, String description, LocalDateTime dateTime, String cep,

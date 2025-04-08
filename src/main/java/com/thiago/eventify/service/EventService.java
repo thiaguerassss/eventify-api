@@ -165,12 +165,7 @@ public class EventService {
 
     private AwesomeApiResponseDTO getAddressInfo(Event event){
         String eventCep = event.getCep().replace("-", "");
-        AwesomeApiResponseDTO addressData = this.awesomeApiClient.addressInfo(eventCep);
-        if (Objects.nonNull(addressData.status())){
-            if (addressData.status().equals(404)) throw new InvalidInputException(
-                    "O CEP informado não existe na base de dados.");
-        }
-        return addressData;
+        return this.awesomeApiClient.addressInfo(eventCep);
     }
 
     private void setAddressInfo(AwesomeApiResponseDTO addressData, Event event){

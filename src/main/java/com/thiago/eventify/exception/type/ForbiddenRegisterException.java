@@ -1,4 +1,4 @@
-package com.thiago.eventify.exception;
+package com.thiago.eventify.exception.type;
 
 public class ForbiddenRegisterException extends RuntimeException {
     public ForbiddenRegisterException(String message) {

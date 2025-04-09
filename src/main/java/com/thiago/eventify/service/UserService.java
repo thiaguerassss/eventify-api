@@ -4,7 +4,7 @@ import com.thiago.eventify.dto.CreateUserDTO;
 import com.thiago.eventify.dto.UpdateUserDTO;
 import com.thiago.eventify.entity.Event;
 import com.thiago.eventify.entity.User;
-import com.thiago.eventify.exception.InvalidInputException;
+import com.thiago.eventify.exception.type.InvalidInputException;
 import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.repository.UserRepository;
 import org.hibernate.ObjectNotFoundException;

@@ -1,4 +1,4 @@
-package com.thiago.eventify.exception;
+package com.thiago.eventify.exception.type;
 
 public class AccessDeniedException extends RuntimeException {
     public AccessDeniedException(String message) {

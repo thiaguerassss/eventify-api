@@ -24,10 +24,12 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final EventMapper eventMapper;
 
-    public UserController(UserService userService, UserMapper userMapper){
+    public UserController(UserService userService, UserMapper userMapper, EventMapper eventMapper){
         this.userService = userService;
         this.userMapper = userMapper;
+        this.eventMapper = eventMapper;
     }
 
     @GetMapping("/{id}")
@@ -62,7 +64,7 @@ public class UserController {
     @GetMapping("/{id}/events")
     public ResponseEntity<List<EventDTO>> findAllEventsByUser(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         Set<Event> events = this.userService.findAllEvents(id, pin);
-        List<EventDTO> eventsDTO = EventMapper.toDTOList(events.stream().toList());
+        List<EventDTO> eventsDTO = this.eventMapper.toDTOList(events.stream().toList());
         return ResponseEntity.ok(eventsDTO);
     }
 }

@@ -21,17 +21,19 @@ import java.util.UUID;
 public class EventController {
 
     private final EventService eventService;
+    private final EventMapper eventMapper;
     private final UserMapper userMapper;
 
-    public EventController(EventService eventService, UserMapper userMapper){
+    public EventController(EventService eventService, EventMapper eventMapper, UserMapper userMapper){
         this.eventService = eventService;
+        this.eventMapper = eventMapper;
         this.userMapper = userMapper;
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<EventDTO>> findAll(){
         List<Event> events = this.eventService.findAll();
-        List<EventDTO> eventsDTO = EventMapper.toDTOList(events);
+        List<EventDTO> eventsDTO = this.eventMapper.toDTOList(events);
         return ResponseEntity.ok(eventsDTO);
     }
 
@@ -39,7 +41,7 @@ public class EventController {
     public ResponseEntity<EventWithWeatherForecastDTO> findById(@PathVariable("id") UUID id){
         Event event = this.eventService.findById(id);
         WeatherForecastApiResponseDTO weatherForecast = this.eventService.getEventWeatherInfo(event);
-        EventWithWeatherForecastDTO eventDTO = EventMapper.toDTO(event, weatherForecast);
+        EventWithWeatherForecastDTO eventDTO = this.eventMapper.toDTO(event, weatherForecast);
         return ResponseEntity.ok(eventDTO);
     }
 
@@ -48,7 +50,7 @@ public class EventController {
                                                               @RequestParam("ownerPin") String pin){
         Event event = this.eventService.create(data, pin);
         WeatherForecastApiResponseDTO weatherForecast = this.eventService.getEventWeatherInfo(event);
-        EventWithWeatherForecastDTO eventDTO = EventMapper.toDTO(event, weatherForecast);
+        EventWithWeatherForecastDTO eventDTO = this.eventMapper.toDTO(event, weatherForecast);
         URI location = URI.create("/event/" + event.getId());
         return ResponseEntity.created(location).body(eventDTO);
     }
@@ -60,7 +62,7 @@ public class EventController {
                                                               @RequestParam("ownerPin") String ownerPin){
         Event event = this.eventService.update(id, ownerId, ownerPin, data);
         WeatherForecastApiResponseDTO weatherForecast = this.eventService.getEventWeatherInfo(event);
-        EventWithWeatherForecastDTO eventDTO = EventMapper.toDTO(event, weatherForecast);
+        EventWithWeatherForecastDTO eventDTO = this.eventMapper.toDTO(event, weatherForecast);
         return ResponseEntity.ok(eventDTO);
     }
 

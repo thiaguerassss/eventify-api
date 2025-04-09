@@ -32,13 +32,15 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserService userService;
+    private final EventMapper eventMapper;
     private final AwesomeApiClient awesomeApiClient;
     private final WeatherForecastApiClient weatherForecastApiClient;
 
-    public EventService(EventRepository eventRepository, UserService userService, AwesomeApiClient awesomeApiClient,
-                        WeatherForecastApiClient weatherForecastApiClient){
+    public EventService(EventRepository eventRepository, UserService userService, EventMapper eventMapper,
+                        AwesomeApiClient awesomeApiClient, WeatherForecastApiClient weatherForecastApiClient){
         this.eventRepository = eventRepository;
         this.userService = userService;
+        this.eventMapper = eventMapper;
         this.awesomeApiClient = awesomeApiClient;
         this.weatherForecastApiClient = weatherForecastApiClient;
     }
@@ -55,7 +57,7 @@ public class EventService {
     @Transactional
     public Event create(CreateEventDTO data, String pin){
         this.userService.findByIdAndValidate(data.ownerId(), pin);
-        Event event = EventMapper.toEntity(data);
+        Event event = this.eventMapper.toEntity(data);
         AwesomeApiResponseDTO addressData = this.getAddressInfo(event);
         this.setAddressInfo(addressData, event);
         return this.eventRepository.save(event);
@@ -65,7 +67,7 @@ public class EventService {
     public Event update(UUID id, UUID ownerId, String ownerPin, UpdateEventDTO data){
         Event event = this.findEventAndValidateOwner(id, ownerId, ownerPin);
         this.validateEventUpdate(event, data);
-        EventMapper.updateEntity(data, event);
+        this.eventMapper.updateEntity(data, event);
         if (!event.getCep().equals(data.cep())){
             AwesomeApiResponseDTO addressData = this.getAddressInfo(event);
             this.setAddressInfo(addressData, event);

@@ -23,22 +23,24 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService, UserMapper userMapper){
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         User user = this.userService.findByIdAndValidate(id, pin);
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = this.userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping
     public ResponseEntity<UserDTO> create(@RequestBody @Valid CreateUserDTO data){
         User user = this.userService.create(data);
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = this.userMapper.toDTO(user);
         URI location = URI.create("/user/" + user.getId());
         return ResponseEntity.created(location).body(userDTO);
     }
@@ -47,7 +49,7 @@ public class UserController {
     public ResponseEntity<UserDTO> update(@PathVariable("id") UUID id, @RequestParam("pin") String pin,
                                           @RequestBody @Valid UpdateUserDTO data){
         User user = this.userService.update(id, pin, data);
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = this.userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
 

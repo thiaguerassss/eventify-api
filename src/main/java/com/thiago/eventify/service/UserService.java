@@ -18,9 +18,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, UserMapper userMapper){
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     public User findByIdAndValidate(UUID id, String pin){
@@ -32,14 +34,14 @@ public class UserService {
 
     @Transactional
     public User create(CreateUserDTO data){
-        User user = UserMapper.toEntity(data);
+        User user = this.userMapper.toEntity(data);
         return this.userRepository.save(user);
     }
 
     @Transactional
     public User update(UUID id, String pin, UpdateUserDTO data){
         User user = this.findByIdAndValidate(id, pin);
-        UserMapper.updateEntity(data, user);
+        this.userMapper.updateEntity(data, user);
         return this.userRepository.save(user);
     }
 

@@ -21,9 +21,11 @@ import java.util.UUID;
 public class EventController {
 
     private final EventService eventService;
+    private final UserMapper userMapper;
 
-    public EventController(EventService eventService){
+    public EventController(EventService eventService, UserMapper userMapper){
         this.eventService = eventService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/all")
@@ -86,7 +88,7 @@ public class EventController {
     @GetMapping("/{id}/participants")
     public ResponseEntity<List<UserDTO>> findParticipantsByEvent(@PathVariable("id") UUID id){
         Set<User> participants = this.eventService.findAllParticipants(id);
-        List<UserDTO> participantsDTO = UserMapper.toDTOList(participants.stream().toList());
+        List<UserDTO> participantsDTO = this.userMapper.toDTOList(participants.stream().toList());
         return ResponseEntity.ok(participantsDTO);
     }
 }

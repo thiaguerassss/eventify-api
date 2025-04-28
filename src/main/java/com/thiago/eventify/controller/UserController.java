@@ -9,6 +9,10 @@ import com.thiago.eventify.entity.User;
 import com.thiago.eventify.mapper.EventMapper;
 import com.thiago.eventify.mapper.UserMapper;
 import com.thiago.eventify.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@Tag(name = "Usuário", description = "API para gerenciamento de usuários e suas ações relacionadas.")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -32,6 +37,16 @@ public class UserController {
         this.eventMapper = eventMapper;
     }
 
+    @Operation(
+            summary = "Buscar usuário por ID",
+            description = "Retorna um usuário baseado no ID e valida o PIN informado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "PIN inválido ou erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         User user = this.userService.findByIdAndValidate(id, pin);
@@ -39,6 +54,16 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
+    @Operation(
+            summary = "Criar novo usuário",
+            description = "Cria um novo usuário a partir dos dados informados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados enviados"),
+            @ApiResponse(responseCode = "409", description = "Violação de integridade de dados (ex: email duplicado)"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @PostMapping
     public ResponseEntity<UserDTO> create(@RequestBody @Valid CreateUserDTO data){
         User user = this.userService.create(data);
@@ -47,6 +72,17 @@ public class UserController {
         return ResponseEntity.created(location).body(userDTO);
     }
 
+    @Operation(
+            summary = "Atualizar usuário",
+            description = "Atualiza as informações de um usuário existente com base no ID e PIN fornecidos."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "PIN inválido ou erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Violação de integridade de dados"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable("id") UUID id, @RequestParam("pin") String pin,
                                           @RequestBody @Valid UpdateUserDTO data){
@@ -55,12 +91,32 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
+    @Operation(
+            summary = "Excluir usuário",
+            description = "Exclui um usuário existente com base no ID e valida o PIN informado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuário excluído com sucesso"),
+            @ApiResponse(responseCode = "400", description = "PIN inválido"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         this.userService.delete(id, pin);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Buscar eventos de um usuário",
+            description = "Retorna todos os eventos que o usuário está participando, validando o PIN informado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Eventos encontrados com sucesso"),
+            @ApiResponse(responseCode = "400", description = "PIN inválido"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @GetMapping("/{id}/events")
     public ResponseEntity<List<EventDTO>> findAllEventsByUser(@PathVariable("id") UUID id, @RequestParam("pin") String pin){
         Set<Event> events = this.userService.findAllEvents(id, pin);
